@@ -3,12 +3,12 @@ spring:
     name: url-shortener
 
   profiles:
-    active: dev
+    active: ${SPRING_PROFILES_ACTIVE:dev}
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/urlshortener
-    username: urlshortener
-    password: urlshortener
+    url: ${DATABASE_URL}
+    username: ${PGUSER}
+    password: ${PGPASSWORD}
     hikari:
       maximum-pool-size: 20
       minimum-idle: 5
@@ -70,7 +70,7 @@ spring:
         spring.json.trusted.packages: "com.urlshortener.dto.event"
 
 server:
-  port: 8080
+  port: ${PORT:8080}
   compression:
     enabled: true
   error:
@@ -78,7 +78,7 @@ server:
     include-binding-errors: always
 
 app:
-  base-url: http://localhost:8080
+  base-url: ${APP_BASE_URL:http://localhost:8080}
   short-code:
     length: 7
   jwt:
