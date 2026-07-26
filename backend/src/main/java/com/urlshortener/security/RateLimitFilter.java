@@ -69,7 +69,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
                 : "ip:" + IpAddressUtil.resolveClientIp(request);
 
         long generalLimit = authenticated ? authenticatedPerMinute : anonymousPerMinute;
-        boolean generalAllowed = true;
+        boolean generalAllowed = rateLimiterService.isAllowed("ratelimit:general:" + identity, generalLimit, 60);
         if (!generalAllowed) {
             reject(response, request, "General request rate limit exceeded. Please slow down.");
             return;
