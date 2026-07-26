@@ -15,9 +15,16 @@ spring:
       ssl:
         enabled: ${REDIS_SSL:true}
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    # Defaults to an address nothing is listening on, rather than leaving this
+    # unset — Spring fails app *startup* entirely if a referenced env var has no
+    # fallback and isn't provided. With the default, a deploy that skips Kafka
+    # simply never gets a broker to talk to: click events fail to publish (logged,
+    # non-fatal, handled off the request thread — see ClickEventProducer) and the
+    # two @KafkaListener consumers retry quietly in the background. Redirects and
+    # every other endpoint are unaffected either way.
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     properties:
-      security.protocol: SASL_SSL
+      security.protocol: ${KAFKA_SECURITY_PROTOCOL:PLAINTEXT}
   lifecycle:
     timeout-per-shutdown-phase: 25s
 
