@@ -143,8 +143,8 @@ jobs:
           file: ./backend/Dockerfile
           push: false
           tags: url-shortener:ci-${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # cache-from: type=gha
+          # cache-to: type=gha,mode=max
 
       - name: Trivy Scan
         uses: aquasecurity/trivy-action@master
