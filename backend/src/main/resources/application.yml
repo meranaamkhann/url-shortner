@@ -53,6 +53,14 @@ spring:
       retries: 3
       properties:
         enable.idempotence: true
+        # Safety net for the redirect hot path: publish() is meant to be
+        # fire-and-forget, but KafkaProducer.send() still blocks the calling
+        # (Tomcat) thread while it waits for topic metadata. If Kafka is ever
+        # unreachable, the default 60s max.block.ms would make every redirect
+        # hang for up to a minute. Capping it here means a Kafka outage costs
+        # a couple of seconds per click event, never a stalled redirect.
+        max.block.ms: 2000
+        request.timeout.ms: 5000
     consumer:
       group-id: url-shortener-analytics-consumer
       auto-offset-reset: earliest

@@ -8,7 +8,19 @@ spring:
       host: redis
       port: 6379
   kafka:
-    bootstrap-servers: kafka:9092
+    # IMPORTANT: use the internal inter-broker listener (kafka:29092), not kafka:9092.
+    # kafka:9092 is the PLAINTEXT_HOST listener, whose advertised address is
+    # "localhost:9092" (see docker/docker-compose.yml KAFKA_ADVERTISED_LISTENERS) — that
+    # address is meant for tools running on your machine, not for another container.
+    # If the app connects to kafka:9092 it can complete the *initial* bootstrap
+    # connection (the port is open), but every request afterwards fails because Kafka
+    # tells the client "the broker is at localhost:9092", which from inside the app
+    # container just points back at itself. That produces an endless reconnect loop
+    # (visible as constant "Connection to node 1 (localhost/127.0.0.1:9092) could not
+    # be established" warnings in app.log) and — much worse — makes every redirect
+    # request that tries to publish a click event block for up to producer
+    # max.block.ms waiting on metadata that will never arrive.
+    bootstrap-servers: kafka:29092
 
 app:
   base-url: ${APP_BASE_URL:http://localhost:8080}
