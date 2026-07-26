@@ -126,7 +126,7 @@ jobs:
       - name: Build image (no push — validates the Dockerfile builds cleanly)
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./backend
           push: false
           tags: url-shortener:ci-${{ github.sha }}
           cache-from: type=gha
