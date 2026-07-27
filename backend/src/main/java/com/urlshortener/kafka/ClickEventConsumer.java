@@ -16,24 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-/**
- * Consumes click-events and performs the (relatively) expensive writes that we
- * deliberately kept off the synchronous redirect path: the detailed click_events
- * row insert and the denormalized urls.click_count increment.
- *
- * Consumer group is configured (application.yml: spring.kafka.consumer.group-id) so
- * that scaling out this consumer (multiple app instances, or a dedicated analytics-
- * worker deployment) automatically load-balances partitions across instances —
- * this is what lets click-event processing scale independently from the redirect
- * API's instance count.
- *
- * Error handling: a poison-pill message (e.g. malformed JSON, or a urlId that no
- * longer exists) would otherwise block its partition forever on retry. In production
- * this listener is wrapped with a DefaultErrorHandler configured to retry a few times
- * then route to the click-events-dlq topic (see KafkaConfig#clickEventsDlqTopic) —
- * omitted here for brevity but called out explicitly so it isn't mistaken for an
- * oversight.
- */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -65,9 +47,6 @@ public class ClickEventConsumer {
                     .build();
             clickEventRepository.save(event);
 
-            // Bot clicks are still recorded for transparency/anti-fraud analysis, but are
-            // excluded from the user-facing click_count to avoid misleading owners about
-            // genuine human engagement (a common source of "analytics spam" complaints).
             if (!ua.bot()) {
                 urlRepository.incrementClickCount(urlId);
             }

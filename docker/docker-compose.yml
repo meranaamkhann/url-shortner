@@ -1,10 +1,5 @@
 version: "3.9"
 
-# Full local stack for development and demoing the project end-to-end.
-# `docker compose up -d` brings up everything: app + all Phase 1-4 infra +
-# monitoring. Production deployment uses the Kubernetes manifests in k8s/
-# instead — this file is for local dev and portfolio demo purposes.
-
 services:
 
   postgres:

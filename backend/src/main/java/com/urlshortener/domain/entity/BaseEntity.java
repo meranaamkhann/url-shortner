@@ -14,18 +14,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 
-/**
- * Common audit + optimistic-locking fields shared by all entities.
- * Using @Version gives us optimistic concurrency control out of the box,
- * which is how we resolve "two requests editing the same URL at once"
- * without resorting to pessimistic row locks for every read.
- *
- * Uses Lombok's @SuperBuilder (not plain @Builder) specifically so that
- * subclasses (User, Url) can build instances with these inherited fields
- * (createdAt/updatedAt/version) set directly via their own builder — a plain
- * @Builder on a subclass silently ignores superclass fields, which is a common
- * and easy-to-miss Lombok pitfall in JPA entity hierarchies.
- */
 @Getter
 @Setter
 @SuperBuilder

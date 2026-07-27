@@ -6,9 +6,6 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    # Rate limiting also exists at the ingress layer as defense-in-depth, on top
-    # of the application-level Redis-backed limiter — the ingress layer absorbs
-    # crude volumetric abuse before it even reaches an application pod.
     nginx.ingress.kubernetes.io/limit-rps: "200"
     nginx.ingress.kubernetes.io/proxy-body-size: "1m"
 spec:

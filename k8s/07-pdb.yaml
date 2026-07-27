@@ -4,10 +4,6 @@ metadata:
   name: url-shortener-pdb
   namespace: url-shortener
 spec:
-  # Guarantees at least 2 pods stay up during voluntary disruptions (node
-  # drains for upgrades, cluster autoscaler scale-down) — without this, a
-  # rolling node upgrade could legally evict all replicas simultaneously
-  # if they happen to land on nodes being drained back-to-back.
   minAvailable: 2
   selector:
     matchLabels:
