@@ -108,6 +108,7 @@ public class SecurityConfig {
                     .requestMatchers("/actuator/health/**", "/actuator/info", "/actuator/prometheus").permitAll()
                     .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                     .requestMatchers("/", "/*.html", "/assets/**", "/static/**").permitAll() // the static frontend
+                    .requestMatchers("/error").permitAll()
                     // Admin-only surface
                     .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                     // Everything else requires authentication; per-resource ownership is

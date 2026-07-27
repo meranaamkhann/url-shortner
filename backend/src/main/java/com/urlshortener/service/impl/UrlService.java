@@ -424,7 +424,7 @@ public class UrlService {
     }
 
     public UrlResponse toResponse(Url url) {
-        String domainPart = baseUrl;
+        String domainPart = baseUrl.replaceAll("/+$", ""); 
         return new UrlResponse(
                 url.getId().toString(),
                 url.getShortCode(),
