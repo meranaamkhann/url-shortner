@@ -792,7 +792,8 @@ footer{border-top:1px solid var(--border);padding:36px 0;}
       document.getElementById("profileUsername").textContent = p.username;
       document.getElementById("profileCreated").textContent = p.createdAt ? new Date(p.createdAt).toLocaleDateString() : "—";
       document.getElementById("profileLastLogin").textContent = p.lastLoginAt ? new Date(p.lastLoginAt).toLocaleString() : "First login";
-      api("/api/v1/urls?page=0&size=1").then(function(data){
+    }).catch(function(){});
+    api("/api/v1/urls?page=0&size=1").then(function(data){
       document.getElementById("profileLinkCount").textContent = (data && typeof data.totalElements === "number") ? data.totalElements : "—";
     }).catch(function(){});
   }
