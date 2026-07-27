@@ -10,22 +10,6 @@ import org.jsoup.nodes.Document;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-/**
- * Fetches OpenGraph/meta tags from the destination URL to power link previews
- * (Functional Requirement: Link preview).
- *
- * This is the ONE place the server makes an outbound request to a user-supplied URL,
- * which makes it the system's primary SSRF surface — handled by:
- *   1. UrlValidator#isSafeForServerSideFetch resolving the host and rejecting loopback/
- *      private/link-local addresses (blocks attacks like fetching http://169.254.169.254/
- *      to read cloud instance metadata through our server).
- *   2. A strict connect/read timeout so a slow/malicious endpoint can't tie up a request
- *      thread indefinitely.
- *   3. A capped response size (via Jsoup's maxBodySize) so a multi-gigabyte response
- *      can't be used for a memory-exhaustion DoS.
- * Results are cached (24h TTL) since destination page metadata rarely changes and this
- * avoids re-fetching the same third-party page on every preview request.
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor

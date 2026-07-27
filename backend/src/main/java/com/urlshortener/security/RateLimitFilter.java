@@ -19,19 +19,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-/**
- * Applies tiered, per-endpoint-class rate limits:
- *   - anonymous traffic: limited per client IP (deters scripted abuse without an account)
- *   - authenticated traffic: limited per user ID (a higher ceiling, since accounts can be
- *     individually banned/throttled if abused — IP limits alone are easily defeated by
- *     rotating proxies, so account-based limits matter more once a user is logged in)
- *   - the URL-creation endpoint specifically has its own, stricter hourly bucket, since
- *     that's the operation with the highest cost (DB write + cache write) and the most
- *     attractive to spam/abuse (e.g. mass-shortening for SEO spam or phishing campaigns)
- *
- * Runs after JwtAuthenticationFilter so SecurityContext is already populated when this
- * filter decides whether to key on IP or user ID.
- */
 @Component
 @RequiredArgsConstructor
 public class RateLimitFilter extends OncePerRequestFilter {

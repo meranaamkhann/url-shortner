@@ -14,12 +14,6 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.Map;
 
-/**
- * Generates QR codes for short URLs (Functional Requirement: QR code generation).
- * Uses Google's ZXing — the de facto standard JVM library for this — rather than
- * hand-rolling QR matrix encoding, which is exactly the kind of well-solved problem
- * not worth reimplementing.
- */
 @Service
 public class QrCodeService {
 

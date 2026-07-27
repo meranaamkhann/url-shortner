@@ -6,14 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-/**
- * Publishes security-relevant events (login failures, account lockouts, suspicious-URL
- * rejections, mass deletions) to the audit-events topic. AuditLogService remains the
- * primary synchronous-ish write path backing the in-app "recent activity" view; this
- * Kafka fan-out exists so downstream systems — a SIEM, a fraud-detection pipeline, a
- * security team's alerting rules — can consume the same event stream independently,
- * without ever touching our database or coupling their uptime to ours.
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor

@@ -19,11 +19,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-/**
- * Account-management operations for the currently authenticated user (as opposed to
- * AuthService, which handles registration/login/tokens for a not-yet-authenticated
- * caller). Kept as a separate service so each class has one clear reason to change.
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -41,14 +36,7 @@ public class UserService {
         return toProfileResponse(user);
     }
 
-    /**
-     * Changes the current user's password after verifying the current one. On success,
-     * every existing refresh token for this user is revoked — so any other
-     * device/browser session is immediately logged out and must sign in again with the
-     * new password. This is standard practice for a password change: if the change was
-     * prompted by a suspected compromise, a stale session elsewhere would otherwise stay
-     * silently authenticated with no way for the user to know.
-     */
+  
     @Transactional
     public void changePassword(UUID userId, ChangePasswordRequest request, String ipAddress) {
         User user = userRepository.findById(userId)

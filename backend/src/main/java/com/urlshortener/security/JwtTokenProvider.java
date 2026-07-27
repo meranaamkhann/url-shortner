@@ -17,17 +17,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-/**
- * Issues and validates short-lived JWT access tokens.
- *
- * Why JWT + refresh token rotation rather than server-side sessions:
- *  - Stateless access tokens let any of N horizontally-scaled instances validate a
- *    request with zero shared state / no Redis lookup on every single request.
- *  - Short (15 min) access token lifetime limits the blast radius of a leaked token.
- *  - The refresh token (in RefreshTokenService) IS stateful (hashed in Postgres) so it
- *    can be revoked instantly — giving us the revocability of sessions with the
- *    scalability of stateless tokens for the hot path.
- */
+
 @Slf4j
 @Component
 public class JwtTokenProvider {

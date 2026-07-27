@@ -19,21 +19,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Caching strategy (Phase 3) — see docs/ARCHITECTURE.md "Caching Strategy" for the full
- * write-up. In short:
- *
- *  - "urls" cache: shortCode -> Url DTO, the redirect hot path. Cache-aside pattern:
- *    read-through on miss, write/evict on update/disable/delete. Short TTL (1h) bounds
- *    staleness if an invalidation is ever missed (e.g. multi-instance race).
- *  - A separate short negative-cache TTL absorbs "URL not found" / 404 floods from
- *    enumeration attacks and bots probing random short codes, so they hit Redis
- *    instead of Postgres on every guess (see CacheService#cacheNegative).
- *  - Rate limiting (Bucket4j) also uses Redis as its distributed counter store so rate
- *    limits are enforced consistently across all horizontally-scaled app instances,
- *    not per-instance (which would let a client multiply their effective limit by N
- *    just by spreading requests across N pods).
- */
+
 @Configuration
 public class RedisConfig {
 

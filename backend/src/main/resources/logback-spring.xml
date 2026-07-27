@@ -9,12 +9,6 @@
         </encoder>
     </appender>
 
-    <!--
-        In production this would be replaced by a JSON encoder (e.g. logstash-logback-encoder)
-        shipping to Fluentd/Logstash -> Elasticsearch, or to Loki via Promtail.
-        Kept as a plain console pattern here so the project runs without extra infra,
-        but the appender is isolated so swapping encoders is a one-line change.
-    -->
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
     </root>

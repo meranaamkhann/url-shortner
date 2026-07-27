@@ -16,11 +16,6 @@ import java.util.UUID;
 
 public interface UrlRepository extends JpaRepository<Url, UUID> {
 
-    /**
-     * Lookup for the default (no custom domain) namespace. This is the hot path
-     * hit on every redirect, so it MUST be covered by the unique index defined
-     * in V1__init_schema.sql (uq_urls_domain_shortcode).
-     */
     @Query("select u from Url u where u.shortCode = :shortCode and u.domain is null and u.deletedAt is null")
     Optional<Url> findByShortCodeAndDefaultDomain(@Param("shortCode") String shortCode);
 
@@ -39,11 +34,6 @@ public interface UrlRepository extends JpaRepository<Url, UUID> {
 
     Page<Url> findByOwnerIdAndStatusAndDeletedAtIsNull(UUID ownerId, UrlStatus status, Pageable pageable);
 
-    /**
-     * Atomic counter increment — avoids the classic "read click_count, add 1, write back"
-     * race condition under concurrent redirects. A single UPDATE...SET x = x + 1 is
-     * executed entirely inside the database and is safe under any level of concurrency.
-     */
     @Modifying(clearAutomatically = true)
     @Query("update Url u set u.clickCount = u.clickCount + 1 where u.id = :id")
     int incrementClickCount(@Param("id") UUID id);
@@ -56,17 +46,6 @@ public interface UrlRepository extends JpaRepository<Url, UUID> {
     @Query("update Url u set u.deletedAt = :now, u.status = 'DELETED' where u.id = :id")
     int softDelete(@Param("id") UUID id, @Param("now") Instant now);
 
-    /**
-     * Scheduled job target: URLs whose expiry passed but are still marked ACTIVE — covers
-     * BOTH expiry modes (Functional Requirement: time-based AND click-count-based expiry).
-     * The redirect hot path (UrlService#resolveAndTrack) deliberately trusts the cached
-     * UrlResponse's `status` field rather than recomputing expiry on every request, since
-     * clickCount is updated asynchronously (via the Kafka click-events consumer) and isn't
-     * safe to treat as live inside a 1-hour-cached DTO. This sweep is what actually flips
-     * `status` to EXPIRED (and evicts the cache entry) once either condition is met, so the
-     * hot path's cheap "status == EXPIRED?" check stays correct within one sweep interval
-     * (5 minutes — see UrlService#markExpiredUrls).
-     */
     @Query("select u from Url u where u.status = 'ACTIVE' and u.deletedAt is null and "
             + "((u.expiresAt is not null and u.expiresAt < :now) "
             + "or (u.maxClicks is not null and u.clickCount >= u.maxClicks))")

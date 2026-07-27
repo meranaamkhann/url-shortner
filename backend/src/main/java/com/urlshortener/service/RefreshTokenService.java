@@ -12,18 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 
-/**
- * Manages refresh tokens with rotation: every time a refresh token is used, it is
- * revoked and a brand-new one is issued in its place (the old one's `replaced_by`
- * points to the new one). This means a stolen refresh token can only be replayed
- * ONCE before the legitimate user's next refresh invalidates it — if an attacker
- * and the legitimate user both try to use the same (stolen) token, whichever uses
- * it second gets an InvalidTokenException, which is itself a strong signal of token
- * theft worth alerting on.
- *
- * Only the SHA-256 hash of the raw refresh token is ever persisted — if the database
- * is ever compromised, the leaked hashes cannot be replayed without inverting SHA-256.
- */
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenService {

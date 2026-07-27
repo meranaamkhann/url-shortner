@@ -14,12 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.stream.Collectors;
 
-/**
- * Admin-only surface. Coarse-grained access control (hasRole('ADMIN')) is enforced at
- * SecurityConfig's /api/v1/admin/** matcher AND restated here at the method level —
- * defense in depth, so this controller is provably safe even if the URL pattern in
- * SecurityConfig is ever refactored or a route is moved.
- */
 @RestController
 @RequestMapping("/api/v1/admin")
 @RequiredArgsConstructor

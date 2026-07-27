@@ -17,20 +17,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-/**
- * Shared base for "*IT" integration tests, run by the Failsafe plugin during
- * `mvn verify` (separately from the fast unit-test suite run by Surefire during
- * `mvn test` — see pom.xml). Spins up real Postgres + Redis containers so these
- * tests exercise actual SQL execution, Flyway migrations, and Redis cache
- * behavior rather than H2/mocks — catching the class of bug that only shows up
- * against the real database engine (e.g. a partial index or JSONB column type
- * that H2 would silently accept differently).
- *
- * Kafka is intentionally mocked (@MockBean) rather than containerized here:
- * click-event publishing is fire-and-forget from the API's perspective, so
- * these tests verify the publish *call* happens, without paying the cost
- * (and CI flakiness risk) of a full Kafka+Zookeeper container for every test run.
- */
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Testcontainers

@@ -38,12 +38,6 @@ public class UrlController {
     @Value("${app.base-url}")
     private String baseUrl;
 
-    /**
-     * Shortening works for both authenticated and anonymous users (Functional Requirement:
-     * anonymous shortening is a common Bitly/TinyURL pattern for top-of-funnel growth).
-     * When authenticated, the link is associated with the caller as owner; otherwise it's
-     * an ownerless public link manageable only via its returned ID for the session.
-     */
     @PostMapping
     @Operation(summary = "Shorten a URL (works authenticated or anonymous)")
     public ResponseEntity<UrlResponse> create(@Valid @RequestBody CreateUrlRequest request,

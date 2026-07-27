@@ -18,13 +18,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Extracts and validates the Bearer JWT on every request, then populates the
- * SecurityContext so downstream @PreAuthorize checks and controller code can
- * rely on Spring Security's normal authentication model. Invalid/missing tokens
- * simply leave the context empty — anonymous access decisions are then made by
- * SecurityConfig's authorizeHttpRequests rules, not by this filter.
- */
 @Slf4j
 @Component
 @RequiredArgsConstructor

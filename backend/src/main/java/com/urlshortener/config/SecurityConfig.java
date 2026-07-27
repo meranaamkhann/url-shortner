@@ -26,21 +26,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-/**
- * Security architecture summary (see docs/ARCHITECTURE.md for full rationale):
- *
- *  - Stateless sessions: every request is authenticated independently via the JWT
- *    in the Authorization header — no server-side session store, which is required
- *    for horizontal scaling behind a load balancer with no sticky sessions.
- *  - CSRF is disabled: CSRF protects cookie-based session auth from being riden by
- *    a malicious page. We don't use cookies for auth (Bearer tokens only, never
- *    auto-attached by the browser), so the CSRF threat model doesn't apply here.
- *    If a future web client switches to httpOnly cookies for tokens, CSRF protection
- *    (or SameSite=Strict + double-submit tokens) must be reinstated at that point.
- *  - RBAC: method-level @PreAuthorize is used in controllers/services for fine-grained
- *    ownership checks (e.g. "only the URL's owner or an admin can edit it"), while
- *    coarse role gates (e.g. /api/admin/** requires ROLE_ADMIN) live here.
- */
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
@@ -53,9 +38,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // BCrypt with strength 12: deliberately more expensive than the default (10)
-        // to raise the cost of offline brute-forcing a leaked password hash table,
-        // while staying fast enough (~250ms) not to bottleneck login throughput.
         return new BCryptPasswordEncoder(12);
     }
 
@@ -95,9 +77,6 @@ public class SecurityConfig {
                     "frame-ancestors 'none'; " +
                     "object-src 'none';"
                 ))
-                    // permissionsPolicy() is called last in this chain deliberately: its
-                    // Customizer overload returns its own nested PermissionsPolicyConfig
-                    // rather than HeadersConfigurer, so nothing can be chained after it.
                     .permissionsPolicy(pp -> pp.policy("geolocation=(), microphone=(), camera=()")))
             .authorizeHttpRequests(auth -> auth
                     // Public, unauthenticated endpoints

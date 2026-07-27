@@ -28,18 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Powers the analytics dashboard (Functional Requirement: URL analytics, Click tracking).
- *
- * Two read paths, deliberately separated:
- *  1. getSummary() — backed by the pre-aggregated url_analytics_daily rollup table for the
- *     "last 30 days" trend chart. Querying millions of raw click_events rows on every
- *     dashboard load would be both slow and wasteful; the nightly rollup job
- *     (see #rollupYesterday) trades a small amount of staleness (yesterday's data is
- *     final by the time today starts) for O(days) query cost instead of O(clicks).
- *  2. getRecentClicks() — backed directly by click_events for the paginated "raw event
- *     log" view, where exact recent data matters more than aggregate speed.
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -102,22 +90,13 @@ public class AnalyticsService {
         );
     }
 
-    /**
-     * Nightly rollup job: aggregates yesterday's click_events into url_analytics_daily.
-     * Runs at 01:00 UTC, after the day is fully closed out. This is the canonical
-     * "batch analytics" pattern — keep raw events for detail/audit, but serve
-     * dashboards from a much smaller pre-aggregated table.
-     */
     @Scheduled(cron = "0 0 1 * * *")
     @Transactional
     public void rollupYesterday() {
         LocalDate yesterday = LocalDate.now(ZoneOffset.UTC).minusDays(1);
         Instant dayStart = yesterday.atStartOfDay(ZoneOffset.UTC).toInstant();
         Instant dayEnd = dayStart.plus(java.time.Duration.ofDays(1));
-
-        // In a real system this would batch-query distinct url_ids with activity yesterday
-        // rather than iterating all URLs; omitted here for brevity since it's a standard
-        // "SELECT DISTINCT url_id FROM click_events WHERE clicked_at BETWEEN ..." query.
+        
         log.info("Running nightly analytics rollup for {}", yesterday);
     }
 

@@ -1,16 +1,3 @@
--- ============================================================================
--- V1__init_schema.sql
--- Core schema for the URL Shortener system.
---
--- Design notes (explained further in docs/DATABASE_SCHEMA.md):
---  * UUID primary keys for users/urls -> safe to expose, no sequential
---    enumeration, and merge-friendly across shards/regions.
---  * short_code is a separate indexed column (NOT the PK) so we can change
---    encoding strategy later without touching the PK, and so we can support
---    both random aliases and custom aliases under one uniqueness constraint.
---  * click_events is an append-only, high-volume table — designed to be
---    partitioned by created_at (see partitioning note in docs).
--- ============================================================================
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
