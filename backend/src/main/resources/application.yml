@@ -86,8 +86,8 @@ app:
     access-token-expiration-ms: 900000        # 15 minutes
     refresh-token-expiration-ms: 604800000    # 7 days
   rate-limit:
-    anonymous-requests-per-minute: 20
-    authenticated-requests-per-minute: 100
+    anonymous-requests-per-minute: 60
+    authenticated-requests-per-minute: 300
     shorten-requests-per-hour: 200
   cache:
     url-ttl-seconds: 3600
