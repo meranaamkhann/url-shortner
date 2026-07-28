@@ -48,7 +48,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 input{font-family:inherit;color:var(--text);}
 .wrap{max-width:1120px;margin:0 auto;padding:0 32px;}
 .view{display:none;}
-.view.active{display:block;}
+.view.active{display:block;animation:viewFadeIn .35s var(--ease-soft);}
+@keyframes viewFadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 
 nav{
   position:fixed;top:0;left:0;right:0;z-index:100;
@@ -512,7 +513,19 @@ footer{border-top:1px solid var(--border);padding:36px 0;}
     window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
     if (name === "account") loadProfile();
     if (name === "auth" && opts.tab) setAuthTab(opts.tab);
+    // Push a real history entry for this view so browser/trackpad back-navigation
+    // moves between views inside the app first, instead of immediately leaving the
+    // site (which is what happens when a single-page app never touches history —
+    // the whole site otherwise looks like one entry to the browser).
+    if (!opts.fromPopState && (!history.state || history.state.view !== name)) {
+      history.pushState({ view: name }, "", "#" + name);
+    }
   }
+  window.addEventListener("popstate", function(e){
+    var view = (e.state && e.state.view) || "landing";
+    showView(view, { fromPopState: true });
+  });
+  history.replaceState({ view: "landing" }, "", location.pathname + location.search);
   document.querySelectorAll("[data-nav]").forEach(function(el){
     el.addEventListener("click", function(e){
       e.preventDefault();

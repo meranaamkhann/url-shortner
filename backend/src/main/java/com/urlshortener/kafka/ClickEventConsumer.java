@@ -3,7 +3,6 @@ package com.urlshortener.kafka;
 import com.urlshortener.domain.entity.ClickEvent;
 import com.urlshortener.dto.event.ClickEventMessage;
 import com.urlshortener.repository.ClickEventRepository;
-import com.urlshortener.repository.UrlRepository;
 import com.urlshortener.util.UserAgentParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +21,6 @@ import java.util.UUID;
 public class ClickEventConsumer {
 
     private final ClickEventRepository clickEventRepository;
-    private final UrlRepository urlRepository;
 
     @KafkaListener(topics = "click-events", groupId = "${spring.kafka.consumer.group-id}")
     @Transactional
@@ -46,13 +44,9 @@ public class ClickEventConsumer {
                     .bot(ua.bot())
                     .build();
             clickEventRepository.save(event);
-
-            if (!ua.bot()) {
-                urlRepository.incrementClickCount(urlId);
-            }
         } catch (Exception e) {
             log.error("Failed to process click event message on partition={}: {}", partition, message, e);
-            throw e; // rethrow so the consumer's error handler / retry policy can act on it
+            throw e; 
         }
     }
 }

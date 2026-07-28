@@ -81,8 +81,6 @@ public class UrlService {
                 ? userRepository.findById(principal.id()).orElse(null)
                 : null;
 
-        // Dedup: if this owner is re-shortening a URL they already shortened, return the existing one.
-        // This prevents URL explosion from clients that call /shorten on every page load.
         String urlHash = HashUtil.sha256Hex(sanitizedUrl);
         if (owner != null) {
             var existing = urlRepository.findFirstByLongUrlHashAndOwnerIdAndStatusAndDeletedAtIsNull(
@@ -139,18 +137,6 @@ public class UrlService {
         }
         return codeGenerator.generateUniqueCode();
     }
-
-    /**
-     * The redirect hot path. Performance hierarchy (Phase 3):
-     *   1. Redis cache hit  — O(1), sub-millisecond, most requests stop here
-     *   2. Redis miss       — DB lookup, cache the result, respond
-     *   3. Not found        — negative-cache for 60s, return 404
-     *
-     * Click tracking (Phase 4) is fire-and-forget via Kafka: we publish the event and
-     * immediately return the redirect. Analytics lag behind the actual click by the
-     * consumer's processing time, which is an acceptable trade-off for keeping redirect
-     * latency under 10ms regardless of analytics write throughput.
-     */
     @Transactional
     public String resolveAndTrack(String shortCode, HttpServletRequest request) {
         // 1. Cache lookup
@@ -196,7 +182,19 @@ public class UrlService {
             throw new LinkPasswordRequiredException("This link requires a password to access.");
         }
 
-        // 5. Fire-and-forget click event
+        // 5. Synchronous, Kafka-independent click counting. This one number is load-
+        // bearing (it's shown to the link owner and it drives max-clicks-based expiry —
+        // see isExpired() below), so it can't be allowed to depend on an optional
+        // analytics pipeline. If Kafka is down, or simply not deployed at all (e.g. a
+        // lean deploy running just the app + Postgres + Redis), this still works.
+        var ua = com.urlshortener.util.UserAgentParser.parse(request.getHeader("User-Agent"));
+        if (!ua.bot()) {
+            urlRepository.incrementClickCount(java.util.UUID.fromString(urlResponse.id()));
+        }
+
+        // 6. Fire-and-forget click event — the detailed analytics row (country, device,
+        // referrer, 30-day trend) is genuinely fine to be best-effort async via Kafka;
+        // only the simple counter above needs to be guaranteed.
         publishClickEvent(urlResponse, request);
 
         return urlResponse.longUrl();
@@ -325,16 +323,6 @@ public class UrlService {
         }
         return results;
     }
-
-    // ─── Scheduled jobs ──────────────────────────────────────────────────────
-
-    /**
-     * Marks expired ACTIVE URLs as EXPIRED and evicts their cache entries — covers both
-     * time-based expiry (expiresAt passed) and click-count-based expiry (clickCount reached
-     * maxClicks; see UrlRepository#findExpiredButStillActive). Runs every 5 minutes.
-     * Processes in pages of 500 to bound memory footprint and avoid a single transaction
-     * holding locks on thousands of rows.
-     */
     @Scheduled(fixedDelayString = "PT5M", initialDelayString = "PT1M")
     @Transactional
     public void markExpiredUrls() {
@@ -350,11 +338,6 @@ public class UrlService {
         }
     }
 
-    /**
-     * Hard-deletes soft-deleted rows older than 30 days — the retention window giving
-     * owners time to un-delete accidentally deleted links via customer support.
-     * Runs daily at 02:00 UTC (cron syntax in UTC, consistent across any host timezone).
-     */
     @Scheduled(cron = "0 0 2 * * *")
     @Transactional
     public void hardDeleteExpiredSoftDeletes() {
@@ -424,7 +407,7 @@ public class UrlService {
     }
 
     public UrlResponse toResponse(Url url) {
-        String domainPart = baseUrl.replaceAll("/+$", ""); 
+        String domainPart = baseUrl.replaceAll("/+$", "");
         return new UrlResponse(
                 url.getId().toString(),
                 url.getShortCode(),
