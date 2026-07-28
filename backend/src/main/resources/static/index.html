@@ -145,7 +145,8 @@ h1.title{font-family:var(--font-display);font-weight:600;font-size:clamp(42px,6.
 .status-dot{width:7px;height:7px;border-radius:50%;background:var(--success);flex-shrink:0;}
 .status-dot.off{background:var(--text-faint);}
 .link-main{flex:1;min-width:0;}
-.link-code{font-family:var(--font-mono);color:var(--gold);font-size:14.5px;}
+.link-code{font-family:var(--font-mono);color:var(--gold);font-size:14.5px;display:block;text-decoration:none;width:fit-content;}
+.link-code:hover{text-decoration:underline;color:var(--gold-bright);}
 .link-long{font-size:12.5px;color:var(--text-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;max-width:420px;}
 .link-clicks{font-family:var(--font-mono);font-size:13px;color:var(--text-dim);width:70px;text-align:right;flex-shrink:0;}
 .link-actions{display:flex;gap:6px;flex-shrink:0;}
@@ -457,6 +458,26 @@ footer{border-top:1px solid var(--border);padding:36px 0;}
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   var state = { accessToken: null, refreshToken: null, user: null };
+  (function restoreSession(){
+    try {
+      var saved = localStorage.getItem("rdrct-session");
+      if (saved) {
+        var parsed = JSON.parse(saved);
+        state.accessToken = parsed.accessToken || null;
+        state.refreshToken = parsed.refreshToken || null;
+        state.user = parsed.user || null;
+      }
+    } catch (e) {}
+  })();
+  function persistSession(){
+    try {
+      if (state.accessToken) {
+        localStorage.setItem("rdrct-session", JSON.stringify({ accessToken: state.accessToken, refreshToken: state.refreshToken, user: state.user }));
+      } else {
+        localStorage.removeItem("rdrct-session");
+      }
+    } catch (e) {}
+  }
 
   function api(path, opts){
     opts = opts || {};
@@ -688,6 +709,7 @@ footer{border-top:1px solid var(--border);padding:36px 0;}
 
   function onAuthSuccess(data){
     state.accessToken = data.accessToken; state.refreshToken = data.refreshToken; state.user = data.user;
+    persistSession();
     updateAuthUI();
     showView("landing");
     setTimeout(function(){ document.getElementById("dashboard").scrollIntoView({ behavior: "smooth" }); }, 60);
@@ -725,6 +747,7 @@ footer{border-top:1px solid var(--border);padding:36px 0;}
   function doSignOut(){
     api("/api/v1/auth/logout", { method: "POST" }).catch(function(){});
     state.accessToken = null; state.refreshToken = null; state.user = null;
+    persistSession();
     updateAuthUI(); showView("landing");
   }
   document.getElementById("accountSignOutBtn").addEventListener("click", doSignOut);
@@ -748,9 +771,13 @@ footer{border-top:1px solid var(--border);padding:36px 0;}
       var row = document.createElement("div"); row.className = "link-row";
       row.innerHTML =
         '<span class="status-dot' + (u.status === "ACTIVE" ? "" : " off") + '"></span>' +
-        '<div class="link-main"><div class="link-code">' + escapeHtml(u.shortCode) + '</div><div class="link-long">' + escapeHtml(u.longUrl) + '</div></div>' +
+        '<div class="link-main">' +
+          '<a class="link-code" href="' + escapeHtml(u.shortUrl) + '" target="_blank" rel="noopener noreferrer" title="Open ' + escapeHtml(u.shortUrl) + '">' + escapeHtml(u.shortCode) + '</a>' +
+          '<div class="link-long">' + escapeHtml(u.longUrl) + '</div>' +
+        '</div>' +
         '<div class="link-clicks">' + u.clickCount + ' clicks</div>' +
         '<div class="link-actions">' +
+          '<button class="icon-btn" data-act="copy" data-url="' + escapeHtml(u.shortUrl) + '" title="Copy link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h10"/></svg></button>' +
           '<button class="icon-btn" data-act="toggle" data-id="' + u.id + '" data-status="' + u.status + '" title="' + (u.status === "ACTIVE" ? "Disable" : "Enable") + '">' +
             (u.status === "ACTIVE" ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15V9M14 15V9"/><circle cx="12" cy="12" r="9"/></svg>'
               : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 8l7 4-7 4V8z"/><circle cx="12" cy="12" r="9"/></svg>') +
@@ -766,6 +793,13 @@ footer{border-top:1px solid var(--border);padding:36px 0;}
     var id = btn.dataset.id, act = btn.dataset.act;
     if (act === "toggle") { api("/api/v1/urls/" + id + (btn.dataset.status === "ACTIVE" ? "/disable" : "/enable"), { method: "POST" }).then(loadLinks).catch(function(){}); }
     else if (act === "delete") { api("/api/v1/urls/" + id, { method: "DELETE" }).then(loadLinks).catch(function(){}); }
+    else if (act === "copy") {
+      var url = btn.dataset.url;
+      (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function(){
+        var original = btn.title; btn.title = "Copied!";
+        setTimeout(function(){ btn.title = original; }, 1200);
+      }).catch(function(){});
+    }
   });
   function loadLinks(){
     if (!state.accessToken) return;
@@ -816,6 +850,7 @@ footer{border-top:1px solid var(--border);padding:36px 0;}
   });
 
   updateAuthUI();
+  if (state.accessToken) { loadLinks(); }
 })();
 </script>
 </body>
