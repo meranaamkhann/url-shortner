@@ -6,6 +6,18 @@ portfolio piece for FAANG-style interviews, and built incrementally in four ship
 phases rather than as one unfinished "Google-scale" attempt.
 
 ---
+![Java](https://img.shields.io/badge/Java-21-orange)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3-brightgreen)
+![Next.js](https://img.shields.io/badge/Next.js-15-black)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)
+![Redis](https://img.shields.io/badge/Redis-7-red)
+![Kafka](https://img.shields.io/badge/Kafka-Latest-black)
+![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED)
+![License](https://img.shields.io/badge/License-MIT-lightgrey)
+
+🌐 **Live Demo:** https://your-vercel-link.vercel.app
+
+📖 **API Documentation:** https://your-backend/swagger-ui.html
 
 # Screenshots
 
