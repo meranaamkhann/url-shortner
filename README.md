@@ -1,11 +1,4 @@
 # URL Shortener — Production-Grade System Design Project
-
-A complete, production-minded URL shortening platform (Bitly/TinyURL-class) built with
-Spring Boot, PostgreSQL, Redis, and Kafka — designed and documented as a system-design
-portfolio piece for FAANG-style interviews, and built incrementally in four shippable
-phases rather than as one unfinished "Google-scale" attempt.
-
----
 ![Java](https://img.shields.io/badge/Java-21-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3-brightgreen)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black)
@@ -15,6 +8,12 @@ phases rather than as one unfinished "Google-scale" attempt.
 ![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED)
 ![License](https://img.shields.io/badge/License-MIT-lightgrey)
 
+A complete, production-minded URL shortening platform (Bitly/TinyURL-class) built with
+Spring Boot, PostgreSQL, Redis, and Kafka — designed and documented as a system-design
+portfolio piece for FAANG-style interviews, and built incrementally in four shippable
+phases rather than as one unfinished "Google-scale" attempt.
+
+---
 🌐 **Live Demo:** https://your-vercel-link.vercel.app
 
 📖 **API Documentation:** https://your-backend/swagger-ui.html
