@@ -16,7 +16,6 @@ phases rather than as one unfinished "Google-scale" attempt.
 ---
 🌐 **Live Demo:** https://your-vercel-link.vercel.app
 
-📖 **API Documentation:** https://your-backend/swagger-ui.html
 
 # Screenshots
 
