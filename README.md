@@ -5,44 +5,45 @@ Spring Boot, PostgreSQL, Redis, and Kafka — designed and documented as a syste
 portfolio piece for FAANG-style interviews, and built incrementally in four shippable
 phases rather than as one unfinished "Google-scale" attempt.
 
-## Screenshots
+---
 
-### Landing Page
+# Screenshots
 
-<p align="center">
-  <img src="screenshots/landing.png" width="100%">
-</p>
-
-### URL Shortened Successfully
+## Landing Page
 
 <p align="center">
-  <img src="screenshots/shortened.png" width="100%">
+  <img src="./screenshots/landing.jpg" width="100%">
 </p>
 
-### Advanced URL Options
+## URL Shortening
 
 <p align="center">
-  <img src="screenshots/options.png" width="100%">
+  <img src="./screenshots/shortened.jpg" width="100%">
 </p>
 
-### Dashboard
+## Advanced Options
 
 <p align="center">
-  <img src="screenshots/dashboard.png" width="100%">
+  <img src="./screenshots/options.jpg" width="100%">
 </p>
 
-### Features
+## Dashboard
 
 <p align="center">
-  <img src="screenshots/features.png" width="100%">
+  <img src="./screenshots/dashboard.jpg" width="100%">
 </p>
 
-### Infrastructure & Scalability
+## Feature Overview
 
 <p align="center">
-  <img src="screenshots/infrastructure.png" width="100%">
+  <img src="./screenshots/features.jpg" width="100%">
 </p>
 
+## Production Architecture
+
+<p align="center">
+  <img src="./screenshots/infrastructure.jpg" width="100%">
+</p>
 ---
 
 ## Why this project is structured the way it is
