@@ -14,8 +14,9 @@ portfolio piece for FAANG-style interviews, and built incrementally in four ship
 phases rather than as one unfinished "Google-scale" attempt.
 
 ---
-🌐 **Live Demo:** https://your-vercel-link.vercel.app
+🌐 **Live Demo:** https://url-shortener-production-21.up.railway.app/
 
+📖 **API Documentation:** https://url-shortener-production-21.up.railway.app/swagger-ui.html
 
 # Screenshots
 
