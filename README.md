@@ -5,12 +5,43 @@ Spring Boot, PostgreSQL, Redis, and Kafka — designed and documented as a syste
 portfolio piece for FAANG-style interviews, and built incrementally in four shippable
 phases rather than as one unfinished "Google-scale" attempt.
 
+## Screenshots
+
+### Landing Page
+
 <p align="center">
-  <img src="screenshots/landing.png" alt="Landing Page" width="100%">
+  <img src="screenshots/landing.png" width="100%">
 </p>
 
-> **Built by:** Asad Khan — Final Year Project
-> **Stack:** Java 21 · Spring Boot 3 · PostgreSQL 16 · Redis 7 · Apache Kafka · Docker · Kubernetes
+### URL Shortened Successfully
+
+<p align="center">
+  <img src="screenshots/shortened.png" width="100%">
+</p>
+
+### Advanced URL Options
+
+<p align="center">
+  <img src="screenshots/options.png" width="100%">
+</p>
+
+### Dashboard
+
+<p align="center">
+  <img src="screenshots/dashboard.png" width="100%">
+</p>
+
+### Features
+
+<p align="center">
+  <img src="screenshots/features.png" width="100%">
+</p>
+
+### Infrastructure & Scalability
+
+<p align="center">
+  <img src="screenshots/infrastructure.png" width="100%">
+</p>
 
 ---
 
