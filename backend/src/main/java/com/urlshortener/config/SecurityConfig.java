@@ -103,7 +103,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         // In production this list comes from an environment variable / config map per
         // deployment environment — never "*" once credentials/Authorization headers are involved.
-        config.setAllowedOriginPatterns(List.of("https://*.yourdomain.com", "http://localhost:*"));
+        config.setAllowedOriginPatterns(List.of("https://url-shortner-sibbus.vercel.app", "http://localhost:*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
         config.setExposedHeaders(List.of("Location"));
